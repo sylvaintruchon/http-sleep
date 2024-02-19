@@ -1,6 +1,10 @@
-FROM php:7.2-apache
+FROM debian
+RUN apt update && apt -y install apache2 libapache2-mod-php8.2 && apt clean
+COPY conf/000-default.conf /etc/apache2/sites-available/
+COPY conf/ports.conf /etc/apache2/
 COPY src/ /var/www/html/
-RUN sed -i 's/Listen 80/Listen 8080/g' /etc/httpd/conf/httpd.conf
-RUN sed -i 's_logs/_/tmp/_g' /etc/httpd/conf/httpd.conf
-RUN sed -i 's_run/_/tmp/_g' /etc/httpd/conf/httpd.conf
+RUN chown -R root:root /var/log/apache2
+RUN chmod -R 0770 /var/log/apache2
+RUN chmod -R 0770 /var/run/apache2
 EXPOSE 8080
+CMD apachectl -D FOREGROUND
